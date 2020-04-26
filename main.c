@@ -59,9 +59,9 @@ int main(int argc, char *argv[])
 //		gameObject.ledges[i] = tmpLedge;
 //		
 //	}
-	ledge firstLedge = {0,460,640,30};
+	ledge firstLedge = {0,460,640,30,150,75,0};
 	gameObject.ledges[0] = firstLedge;
-	ledge secondLedge = {420,200,64,40};
+	ledge secondLedge = {420,300,64,40,150,75,0};
 	gameObject.ledges[1] = secondLedge;
 		//Check for events while running
 	uint32_t timeStepMs = 1000 / 60;
