@@ -15,12 +15,14 @@ typedef struct{
 //Structure for a person to walk on
 typedef struct{
 	int x,y,width,height;
+	int r,g,b;
 }ledge;
 typedef struct{
 	rectangle body; 
 	float xSpeed,ySpeed;
 	bool onLedge;
 	int jumps;
+	int jumpTimer;
 }kid;
 /*
  *
