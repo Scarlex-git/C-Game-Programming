@@ -1,11 +1,13 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include <SDL2/SDL_clipboard.h>
 #include <stdio.h>
 #include <stdbool.h>
 #include "gameFunctions.h"
 #include "gameObjects.h"
 #include <time.h>
 #include <stdint.h>
+#include "debug.h"
 
 void checkSurface(SDL_Surface *surface);
 int main(int argc, char *argv[])
@@ -13,8 +15,8 @@ int main(int argc, char *argv[])
 	bool running = true;	
 	SDL_Window *window;  //Create the window to draw in
 	SDL_Renderer *renderer; //Create the compiler which helps draw the screen
-
-	SDL_Init(SDL_INIT_VIDEO); //Initialize the library used for displaying video im guessing
+		SDL_Init(SDL_INIT_VIDEO); //Initialize the library used for displaying video im guessing
+	TTF_Init(); //Initialize font library
 	//Create the application window with settings
 	//Parameters being passed in: Title of the window, Initial x position, Initial Y position
 	window = SDL_CreateWindow("Game Window",
@@ -24,7 +26,7 @@ int main(int argc, char *argv[])
 			480,
 			0);
 	//Create the Renderer? Last parameter combines both flags
-	renderer = SDL_CreateRenderer(window,-1,SDL_RENDERER_ACCELERATED);
+	renderer = SDL_CreateRenderer(window,-1,SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 	//Call a game object to write data to	
 	gameState gameObject;
 
@@ -38,9 +40,15 @@ int main(int argc, char *argv[])
 	gameObject.renderer = renderer;
 	gameObject.character.onLedge = false;
 	gameObject.character.jumps = 1;
+	gameObject.fontTextures = NULL;
+	gameObject.debug = false;
+	if (argc == 2){
+	  printf("debug set to true");
+		gameObject.debug = true;
+	}
 
-	
 	loadHeartTexture(&gameObject);
+	loadFont(&gameObject,"Lato-Regular.ttf");
 	SDL_Surface *kid = IMG_Load("kidStanding.png");
 	checkSurface(kid);
 	gameObject.kidTextures[0] = SDL_CreateTextureFromSurface(renderer,kid);
@@ -71,7 +79,7 @@ int main(int argc, char *argv[])
 	  //Get current time
 		uint32_t now = SDL_GetTicks();
 		if (nextGameStep <= now){
-		  	int maxAdvancedFrames = 5;
+		  	int maxAdvancedFrames = 2;
 
 			//Keep advancing logic until the time catches up
 			while(nextGameStep <= now && (maxAdvancedFrames--)){
@@ -80,23 +88,33 @@ int main(int argc, char *argv[])
 				//advance the game by one tick
 				nextGameStep += timeStepMs;
 			}
-			renderScreen(renderer,&gameObject);
+			if(!gameObject.debug){
+			  renderScreen(renderer,&gameObject);
+			}else{
+			  createPositionLabel(&gameObject);
+			  renderScreen(renderer,&gameObject);
+			  freeFontTextures(&gameObject);	
+			}
 		}
 		else{
 		  SDL_Delay(nextGameStep - now);
 		}
 	}
 
-	//Destroy the texture
+	//Destroy textures
 	SDL_DestroyTexture(gameObject.heartTexture);
 	SDL_DestroyTexture(gameObject.kidTextures[0]);
 	SDL_DestroyTexture(gameObject.kidTextures[1]);
+	freeFontTextures(&gameObject);	
 	//Close and Destroy the window
 	SDL_DestroyWindow(window);
 	SDL_DestroyRenderer(renderer);
+	//Close the font 
+	TTF_CloseFont(gameObject.font);
 
 	//Clean and quit
 	SDL_Quit();
-		return 0;
+	TTF_Quit();
+	return 0;
 }
 

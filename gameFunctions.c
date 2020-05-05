@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include "gameFunctions.h"
+#include "debug.h"
 bool manageEvents(SDL_Window *window, gameState *gameObj)
 {
 	//Create event variable
@@ -106,7 +107,9 @@ void renderScreen(SDL_Renderer *renderer, gameState *gameObj)
 
 	//Render the surface with the renderer, object (sdl_texture), null(not fully sure), and dimensions
 	//printf("X: %3.f,Y: %3.f\n",gameObj->character.body.x,gameObj->character.body.y);
-
+	if(gameObj->debug){
+	  drawDebugLabels(gameObj);
+	}
 	SDL_RenderPresent(renderer);
 
 }
@@ -122,33 +125,7 @@ void detectCollision(gameState *gameObj){
 		float px = gameObj->ledges[i].x;
 		float py = gameObj->ledges[i].y;
 		gameObj->ledges[i].r = 120;
-		//First condition: is the object's rightside beyond the left of the platform?
-		//Second condition: is the object's leftside before the right of the platform?
-		//Conclusion: the object's inbetween the platform (but not inside confirmed)
-		if (kx + kw/2 > px && kx+kw/2 < px + pw){
-			//First condition: is the object's top above the platform's bottom?
-			//Second condition: is the object's top above  the platform's top?
-			//Conclusion: The object's head is inbetween the platform
-			if(gameObj->character.ySpeed > 0 && ky < py + ph && ky > py){
-				gameObj->character.body.y = py + ph;
-				ky = py + ph;
-				gameObj->character.ySpeed = 0;
-			}
 
-			//Object's lower half is inside the top of platform
-			if (gameObj->character.ySpeed < 0 && ky + kh > py && ky < py){
-			  gameObj->character.body.y = py - kh;
-			  gameObj->character.ySpeed = -0.001;
-			  gameObj->character.onLedge = true;
-			  ky = py - kh;
-			  gameObj->character.jumps = 2;
-			  //currentlyOnPlatform = true;
-			  printf("on ledge\n");
-			  gameObj->ledges[i].r = 255;
-		  }
-		  //If in freefall, give only one jump
-				  
-	  }
 	  //Colliding with the right of ledge
 	  // First condition: is the object's bottom below the platform's top?
 	  // Second condition: is the object's top above the platform's bottom?
@@ -176,6 +153,33 @@ void detectCollision(gameState *gameObj){
 		  }
 
 	  }		
+	  //First condition: is the object's rightside beyond the left of the platform?
+	  //Second condition: is the object's leftside before the right of the platform?
+	  //Conclusion: the object's inbetween the platform (but not inside confirmed)
+	  if (kx + kw/2 > px && kx+kw/2 < px + pw){
+		  //First condition: is the object's top above the platform's bottom?
+		  //Second condition: is the object's top above  the platform's top?
+		  //Conclusion: The object's head is inbetween the platform
+		  if(gameObj->character.ySpeed > 0 && ky < py + ph && ky > py){
+			  gameObj->character.body.y = py + ph;
+			  ky = py + ph;
+			  gameObj->character.ySpeed = 0;
+		  }
+
+		  //Object's lower half is inside the top of platform
+		  if (gameObj->character.ySpeed < 0 && ky + kh > py && ky < py){
+			gameObj->character.body.y = py - kh;
+			gameObj->character.ySpeed = -0.001;
+			gameObj->character.onLedge = true;
+			ky = py - kh;
+			gameObj->character.jumps = 2;
+			//currentlyOnPlatform = true;
+			//printf("on ledge\n");
+			gameObj->ledges[i].r = 255;
+		}
+		//If in freefall, give only one jump
+				
+	  }
   }
 	//Check if the character is standing on a ledge. If not, reduce his jumps to 0/1 depending on if used already
   	if (!gameObj->character.onLedge && gameObj->character.ySpeed < 0 && gameObj->character.jumps != 0){

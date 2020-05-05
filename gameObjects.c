@@ -21,4 +21,13 @@ void checkSurface(SDL_Surface *surface)
 		exit(1);
 	}
 }
-	
+void loadFont(gameState *gameObj,char *fontName){
+  //Open and store the font, if not found exit the game
+	gameObj->font = TTF_OpenFont(fontName,24);  
+	if(gameObj->font == NULL){
+	  printf("Couldn't open font %s",fontName);
+	  exit(1);
+	}
+	//printf("Loaded font correctly");
+
+}
