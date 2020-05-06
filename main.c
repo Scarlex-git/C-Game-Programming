@@ -91,7 +91,7 @@ int main(int argc, char *argv[])
 			if(!gameObject.debug){
 			  renderScreen(renderer,&gameObject);
 			}else{
-			  createPositionLabel(&gameObject);
+			  createDebugLabels(&gameObject);
 			  renderScreen(renderer,&gameObject);
 			  freeFontTextures(&gameObject);	
 			}

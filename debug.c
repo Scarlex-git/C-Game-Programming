@@ -1,19 +1,34 @@
 #include "debug.h"
 
-void createPositionLabel(gameState *gameObj){
+void createDebugLabels(gameState *gameObj){
   	//Create two labels for the kid's x and y position
 	SDL_Rect labelRect = {0,10,200,42};
 	SDL_Color color = {255,255,255};
-	char *xText = malloc(sizeof(char)*30); 
+	char *xText = malloc(sizeof(char)*12); 
 	sprintf(xText,"X: %i",(int)gameObj->character.body.x);
-	char *yText = malloc(sizeof(char)*30); 
+	char *yText = malloc(sizeof(char)*12); 
 	sprintf(yText,"Y: %i",(int)gameObj->character.body.y);
+	char *ySpeedText = malloc(sizeof(char)*12); 
+	sprintf(ySpeedText,"Y Speed: %i",(int)gameObj->character.ySpeed);
+	char *xSpeedText = malloc(sizeof(char)*12); 
+	sprintf(xSpeedText,"X Speed: %i",(int)gameObj->character.xSpeed);
+	char *onLedgeText = malloc(sizeof(char)*12); 
+	sprintf(onLedgeText,"On Ledge: %s",gameObj->character.onLedge?"true":"false");
 	SDL_Surface *x = TTF_RenderText_Blended(gameObj->font,xText,color);
 	SDL_Surface *y = TTF_RenderText_Blended(gameObj->font,yText,color);
+	SDL_Surface *xSpeed = TTF_RenderText_Blended(gameObj->font,xSpeedText,color);
+	SDL_Surface *ySpeed = TTF_RenderText_Blended(gameObj->font,ySpeedText,color);
+	SDL_Surface *onLedge = TTF_RenderText_Blended(gameObj->font,onLedgeText,color);
 	loadTextureNode(gameObj,x);
 	loadTextureNode(gameObj,y);
+	loadTextureNode(gameObj,xSpeed);
+	loadTextureNode(gameObj,ySpeed);
+	loadTextureNode(gameObj,onLedge);
 	free(xText);
 	free(yText);
+	free(xSpeedText);
+	free(ySpeedText);
+	free(onLedgeText);
 }
 
 void loadTextureNode(gameState *gameObj,SDL_Surface *surface){

@@ -5,7 +5,7 @@
 #include <SDL2/SDL.h>
 #include <stdbool.h>
 #include "gameObjects.h"
-void createPositionLabel(gameState *gameObj);
+void createDebugLabels(gameState *gameObj);
 void insertNode(gameState *gameObj,textureNode *item);
 void loadTextureNode(gameState *gameObj,SDL_Surface *surface);
 void drawDebugLabels(gameState *gameObj);

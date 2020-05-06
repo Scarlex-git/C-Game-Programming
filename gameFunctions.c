@@ -58,7 +58,7 @@ bool manageEvents(SDL_Window *window, gameState *gameObj)
 	
 	gameObj->character.body.y -= gameObj->character.ySpeed;
 	//Slow down the character
-	if(gameObj->character.ySpeed != -5){
+	if(gameObj->character.ySpeed != -5 && !gameObj->character.onLedge){
 		gameObj->character.ySpeed -= .7;
 		//catch if going faster
 		if (gameObj->character.ySpeed <= -5){
@@ -76,7 +76,7 @@ bool manageEvents(SDL_Window *window, gameState *gameObj)
 	}
 	if(state[SDL_SCANCODE_LSHIFT]){
 		if (gameObj->character.jumpTimer < 30){
-			gameObj->character.ySpeed += .5;
+			gameObj->character.ySpeed += .4;
 			gameObj->character.jumpTimer += 1;
 		}
 	}else{
@@ -136,8 +136,10 @@ void detectCollision(gameState *gameObj){
 		  //Second condition: Is the object's right after the platform's right?
 		  //Conclusion: object is inside the platform's right side
 		  if (kx < px+pw && kx + kw > px + pw && gameObj->character.xSpeed < 0){
-			  gameObj->character.body.x = px + pw;
-			  kx = px + pw;
+			  //gameObj->character.body.x = px + pw;
+			  gameObj->character.body.x -= gameObj->character.xSpeed;
+			  //kx = px + pw;
+			  kx -= gameObj->character.xSpeed;
 			  gameObj->character.xSpeed = 0;
 			  break;
 		  }
@@ -146,8 +148,10 @@ void detectCollision(gameState *gameObj){
 		  //Second condition: is the object's leftmost position before ledge's left?
 		  //Conclusion: the object's left and right bounds are between the left side of platform
 		  else if(kx + kw > px && kx < px && gameObj->character.xSpeed > 0){
-			  gameObj->character.body.x = px - kw;
-			  kx = px - kw;
+			  //gameObj->character.body.x = px - kw;
+			  gameObj->character.body.x -= gameObj->character.xSpeed;
+			  kx -= gameObj->character.xSpeed;
+			  //kx = px - kw;
 			  gameObj->character.xSpeed = 0;
 			  break;
 		  }
@@ -161,27 +165,31 @@ void detectCollision(gameState *gameObj){
 		  //Second condition: is the object's top above  the platform's top?
 		  //Conclusion: The object's head is inbetween the platform
 		  if(gameObj->character.ySpeed > 0 && ky < py + ph && ky > py){
-			  gameObj->character.body.y = py + ph;
-			  ky = py + ph;
+			  //gameObj->character.body.y += gameObj->character.ySpeed;
+			  ky += gameObj->character.ySpeed;
+//			  gameObj->character.body.y = py + ph;
+//			  ky = py + ph;
 			  gameObj->character.ySpeed = 0;
 		  }
 
 		  //Object's lower half is inside the top of platform
 		  if (gameObj->character.ySpeed < 0 && ky + kh > py && ky < py){
 			gameObj->character.body.y = py - kh;
+			ky -= py - kh;
+			//gameObj->character.body.y += gameObj->character.ySpeed;
+			//ky += gameObj->character.ySpeed;
 			gameObj->character.ySpeed = -0.001;
 			gameObj->character.onLedge = true;
-			ky = py - kh;
 			gameObj->character.jumps = 2;
 			//currentlyOnPlatform = true;
 			//printf("on ledge\n");
 			gameObj->ledges[i].r = 255;
-		}
-		//If in freefall, give only one jump
+		  }
 				
 	  }
   }
 	//Check if the character is standing on a ledge. If not, reduce his jumps to 0/1 depending on if used already
+	//If in freefall, give only one jump
   	if (!gameObj->character.onLedge && gameObj->character.ySpeed < 0 && gameObj->character.jumps != 0){
 			//Check if previously on ledge, and the collision was made by this platform
 			gameObj->character.jumps = (gameObj->character.jumps)?1:0;
