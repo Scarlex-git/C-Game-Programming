@@ -49,6 +49,7 @@ typedef struct
 	TTF_Font *font;
 	textureNode *fontTextures;
 	bool debug;
+	int cameraOffset;
 }gameState;
 
 void loadHeartTexture(gameState *object);

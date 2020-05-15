@@ -42,6 +42,7 @@ int main(int argc, char *argv[])
 	gameObject.character.jumps = 1;
 	gameObject.fontTextures = NULL;
 	gameObject.debug = false;
+	gameObject.cameraOffset = 0;
 	if (argc == 2){
 	  printf("debug set to true");
 		gameObject.debug = true;
@@ -85,6 +86,10 @@ int main(int argc, char *argv[])
 			while(nextGameStep <= now && (maxAdvancedFrames--)){
 				running = manageEvents(window,&gameObject);
 				detectCollision(&gameObject);
+				gameObject.cameraOffset = -gameObject.character.body.x + 200;
+				if (gameObject.cameraOffset > 0){
+				  gameObject.cameraOffset = 0;
+				}
 				//advance the game by one tick
 				nextGameStep += timeStepMs;
 			}

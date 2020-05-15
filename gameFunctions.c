@@ -65,6 +65,7 @@ bool manageEvents(SDL_Window *window, gameState *gameObj)
 			gameObj->character.ySpeed = -5;
 		}
 	}	
+	//Reset x speed
 	if(gameObj->character.xSpeed != 0){gameObj->character.xSpeed = 0;}
 	if(state[SDL_SCANCODE_LEFT]){
 		gameObj->character.xSpeed = -3;
@@ -95,12 +96,12 @@ void renderScreen(SDL_Renderer *renderer, gameState *gameObj)
 	//Set drawing color to white
 	SDL_SetRenderDrawColor(renderer,43,43,43,255);
 	//Create a rectangle and call function in order to draw rectangle
-	SDL_Rect body = {gameObj->character.body.x,gameObj->character.body.y,gameObj->character.body.width,gameObj->character.body.height};
-	SDL_RenderCopyEx(gameObj->renderer,gameObj->kidTextures[0],NULL,&body,0,NULL,0);
+	SDL_Rect body = {gameObj->cameraOffset + gameObj->character.body.x,gameObj->character.body.y,gameObj->character.body.width,gameObj->character.body.height};
+	SDL_RenderCopy(gameObj->renderer,gameObj->kidTextures[0],NULL,&body);
 	for(int i = 0; i < 2; i++){
 		//SDL_Rect heart = {gameObj->hearts[i].x,gameObj->hearts[i].y,64,64};
 		//SDL_RenderCopy(renderer,gameObj->heartTexture,NULL,&heart);
-		SDL_Rect shape = {gameObj->ledges[i].x,gameObj->ledges[i].y,gameObj->ledges[i].width,gameObj->ledges[i].height};
+		SDL_Rect shape = {gameObj->cameraOffset + gameObj->ledges[i].x,gameObj->ledges[i].y,gameObj->ledges[i].width,gameObj->ledges[i].height};
 		SDL_SetRenderDrawColor(renderer,gameObj->ledges[i].r,gameObj->ledges[i].g,gameObj->ledges[i].b,255);
 		SDL_RenderFillRect(renderer,&shape);
 	}
@@ -160,7 +161,7 @@ void detectCollision(gameState *gameObj){
 	  //First condition: is the object's rightside beyond the left of the platform?
 	  //Second condition: is the object's leftside before the right of the platform?
 	  //Conclusion: the object's inbetween the platform (but not inside confirmed)
-	  if (kx + kw/2 > px && kx+kw/2 < px + pw){
+	  if (kx + kw/2 >= px && kx+kw/2 <= px + pw){
 		  //First condition: is the object's top above the platform's bottom?
 		  //Second condition: is the object's top above  the platform's top?
 		  //Conclusion: The object's head is inbetween the platform
@@ -173,7 +174,7 @@ void detectCollision(gameState *gameObj){
 		  }
 
 		  //Object's lower half is inside the top of platform
-		  if (gameObj->character.ySpeed < 0 && ky + kh > py && ky < py){
+		  if (gameObj->character.ySpeed <= 0 && ky + kh > py && ky < py){
 			gameObj->character.body.y = py - kh;
 			ky -= py - kh;
 			//gameObj->character.body.y += gameObj->character.ySpeed;
